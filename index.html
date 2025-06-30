@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Military Strategic Map</title>
+    <title>U.S. Military Bases in the Middle East</title>
     <!-- Leaflet CSS -->
     <link
         rel="stylesheet"
@@ -26,19 +26,6 @@
         #map {
             height: 100%;
             width: 100%;
-        }
-
-        .leaflet-tooltip.distance-label {
-            background-color: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            border: 1px solid red;
-            font-weight: bold;
-            font-size: 14px;
-            padding: 4px 8px;
-            border-radius: 5px;
-            pointer-events: none;
-            font-family: 'Space Mono', monospace;
-            transform: translate(-50%, -50%);
         }
 
         .leaflet-control-attribution,
@@ -72,9 +59,8 @@
     <script>
         const map = L.map('map', {
             zoomControl: false,
-            attributionControl: false,
-            minZoom: 2
-        }).setView([23.5, 42.5], 6);
+            attributionControl: false
+        });
 
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             subdomains: 'abcd',
@@ -82,21 +68,17 @@
         }).addTo(map);
 
         const locations = [
-            { name: 'Prince Sultan Air Base', coords: [24.4989, 47.1175] },
-            { name: 'Yanbu Airfield', coords: [24.0944, 38.0496] },
-            { name: 'Masjid al-Nabawi (Madinah)', coords: [24.4672, 39.6111] },
-            { name: 'Masjid al-Haram (Makkah)', coords: [21.4225, 39.8262] }
+            { name: 'Prince Sultan Air Base, Saudi Arabia', coords: [24.4989, 47.1175] },
+            { name: 'Al Udeid Air Base, Qatar', coords: [25.117, 51.317] },
+            { name: 'Ali Al Salem Air Base, Kuwait', coords: [29.346, 47.52] },
+            { name: 'Camp Arifjan, Kuwait', coords: [29.1486, 47.9419] },
+            { name: 'Al Dhafra Air Base, UAE', coords: [24.248, 54.548] },
+            { name: 'NSA Bahrain', coords: [26.218, 50.633] },
+            { name: 'Incirlik Air Base, Turkey', coords: [37.003, 35.425] },
+            { name: 'Muwaffaq Salti Air Base, Jordan', coords: [31.824, 36.782] },
+            { name: 'Al Tanf Garrison, Syria', coords: [33.491, 38.615] },
+            { name: 'Al Asad Airbase, Iraq', coords: [33.786, 42.441] }
         ];
-
-        function haversineDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) ** 2 +
-                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLon / 2) ** 2;
-            return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        }
 
         for (let i = 0; i < locations.length; i++) {
             const loc1 = locations[i];
@@ -114,24 +96,6 @@
                   className: 'location-name-label',
                   offset: [10, 0]
               });
-
-            for (let j = i + 1; j < locations.length; j++) {
-                const loc2 = locations[j];
-                const distance = haversineDistance(...loc1.coords, ...loc2.coords).toFixed(0);
-                L.polyline([loc1.coords, loc2.coords], {
-                    color: '#ffffff',
-                    weight: 2,
-                    opacity: 0.8,
-                    dashArray: '4, 6'
-                }).addTo(map);
-                const midLat = (loc1.coords[0] + loc2.coords[0]) / 2;
-                const midLon = (loc1.coords[1] + loc2.coords[1]) / 2;
-                L.tooltip({
-                    permanent: true,
-                    direction: 'center',
-                    className: 'distance-label'
-                }).setContent(`${distance} km`).setLatLng([midLat, midLon]).addTo(map);
-            }
         }
 
         const bounds = L.latLngBounds(locations.map(loc => loc.coords));
